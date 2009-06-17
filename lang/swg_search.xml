@@ -1,0 +1,34 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<swg_lang_file_v1>
+
+<search>
+
+ <done><new><input input="string" /></new></done>
+
+ <helper>
+  <target><input input="string" /></target>
+  <term><input input="string" /></term>
+ </helper>
+
+ <new><input input="string" /></new>
+ <results><input input="string" /></results>
+ <services><input input="string" /></services>
+
+ <target>
+  <input input="string" />
+  <both><input input="string" /></both>
+  <data><input input="string" /></data>
+  <title><only><input input="string" /></only></title>
+ </target>
+
+ <term><input input="string" /></term>
+
+ <word><behavior>
+  <input input="string" />
+  <all><input input="string" /></all>
+  <any><input input="string" /></any>
+ </behavior></word>
+
+</search>
+
+</swg_lang_file_v1>
