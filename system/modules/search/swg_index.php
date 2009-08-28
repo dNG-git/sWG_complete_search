@@ -83,16 +83,13 @@ switch ($direct_settings['a'])
 case "form":
 case "form-save":
 {
-	if ($direct_settings['a'] == "form-save") { $g_mode_save = true; }
-	else { $g_mode_save = false; }
-
+	$g_mode_save = (($direct_settings['a'] == "form-save") ? true : false);
 	if (USE_debug_reporting) { direct_debug (1,"sWG/#echo(__FILEPATH__)# _a={$direct_settings['a']}_ (#echo(__LINE__)#)"); }
 
 	$g_source = (isset ($direct_settings['dsd']['source']) ? ($direct_classes['basic_functions']->inputfilter_basic ($direct_settings['dsd']['source'])) : "");
 	$g_target = (isset ($direct_settings['dsd']['target']) ? ($direct_classes['basic_functions']->inputfilter_basic ($direct_settings['dsd']['target'])) : "");
 
-	if ($g_source) { $g_source_url = base64_decode ($g_source); }
-	else { $g_source_url = "m=search"; }
+	$g_source_url = ($g_source ? base64_decode ($g_source) : "m=search");
 
 	if ($g_target) { $g_target_url = base64_decode ($g_target); }
 	else
@@ -120,9 +117,12 @@ case "form-save":
 	{
 	//j// BOA
 	if ($g_mode_save) { direct_output_related_manager ("search_index_form_save","pre_module_service_action"); }
-	else { direct_output_related_manager ("search_index_form","pre_module_service_action"); }
-	
-	if (!$g_mode_save) { $direct_classes['kernel']->service_https ($direct_settings['search_https'],$direct_cachedata['page_this']); }
+	else
+	{
+		direct_output_related_manager ("search_index_form","pre_module_service_action");
+		$direct_classes['kernel']->service_https ($direct_settings['search_https'],$direct_cachedata['page_this']);
+	}
+
 	$direct_classes['basic_functions']->require_file ($direct_settings['path_system']."/classes/swg_formbuilder.php");
 	if ($g_mode_save) { $direct_classes['basic_functions']->require_file ($direct_settings['path_system']."/functions/swg_tmp_storager.php"); }
 	direct_local_integration ("search");
@@ -139,10 +139,7 @@ case "form-save":
 	{
 		if (($direct_settings['search_intitle'])||($direct_settings['search_intext'])) { $g_continue_check = true; }
 	}
-	else
-	{
-		if (($direct_settings['search_intitle_guests'])||($direct_settings['search_intext_guests'])) { $g_continue_check = true; }
-	}
+	elseif (($direct_settings['search_intitle_guests'])||($direct_settings['search_intext_guests'])) { $g_continue_check = true; }
 
 	if ($g_continue_check)
 	{
@@ -157,8 +154,7 @@ We should have input in save mode
 			$direct_cachedata['i_swords'] = (isset ($GLOBALS['i_swords']) ? (str_replace ("'","",$GLOBALS['i_swords'])) : "");
 			$direct_cachedata['i_swords'] = str_replace ("<value value='$direct_cachedata[i_swords]' />","<value value='$direct_cachedata[i_swords]' /><selected value='1' />","<evars><any><value value='any' /><text><![CDATA[".(direct_local_get ("search_word_behavior_any"))."]]></text></any><all><value value='all' /><text><![CDATA[".(direct_local_get ("search_word_behavior_all"))."]]></text></all></evars>");
 
-			if (isset ($GLOBALS['i_sservices'])) { $g_services_selected = $GLOBALS['i_sservices']; }
-			else { $g_services_selected = $direct_settings['search_services_preselected']; }
+			$g_services_selected = ((isset ($GLOBALS['i_sservices'])) ? $GLOBALS['i_sservices'] : $direct_settings['search_services_preselected']);
 		}
 		else
 		{
@@ -193,10 +189,7 @@ We should have input in save mode
 
 			$direct_cachedata['i_sservices'] .= "<s$g_sid><value value='$g_sid' />";
 			if (in_array ($g_sid,$g_services_selected)) { $direct_cachedata['i_sservices'] .= "<selected value='1' />"; }
-
-			if ($g_service_name) { $direct_cachedata['i_sservices'] .= "<text><![CDATA[$g_service_name]]></text>"; }
-			else { $direct_cachedata['i_sservices'] .= "<text><![CDATA[".(direct_local_get ("core_unknown"))." ($g_service)]]></text>"; }
-
+			$direct_cachedata['i_sservices'] .= ($g_service_name ? "<text><![CDATA[$g_service_name]]></text>" : "<text><![CDATA[".(direct_local_get ("core_unknown"))." ($g_service)]]></text>");
 			$direct_cachedata['i_sservices'] .= "</s$g_sid>";
 		}
 
@@ -221,11 +214,7 @@ Save data edited
 
 			if (!$g_continue_check)
 			{
-				if ((($g_usertype)&&($direct_settings['search_intext']))||($direct_settings['search_intext_guests']))
-				{
-					if ($direct_settings['search_titledata']) { $direct_cachedata['i_sbase'] = "titledata"; }
-					else { $direct_cachedata['i_sbase'] = "data"; }
-				}
+				if ((($g_usertype)&&($direct_settings['search_intext']))||($direct_settings['search_intext_guests'])) { $direct_cachedata['i_sbase'] = ($direct_settings['search_titledata'] ? "titledata" : "data"); }
 				else { $direct_cachedata['i_sbase'] = "title"; }
 			}
 

@@ -249,16 +249,8 @@ case "list":
 								{
 									$g_result_selected['pageurl_marker'] = direct_linker ("url0","m=dataport&s=swgap;search;selector&a=mark_switch&dsd=dtheme+{$direct_cachedata['output_dtheme_mode']}++tid+{$direct_cachedata['output_tid']}++deid+{$g_results_selected[$g_results_position]['ddbdatalinker_id']}++page+".$direct_cachedata['output_page']);
 
-									if ($g_result_selected['marked'])
-									{
-										if (isset ($g_task_array['search_marker_title_1'])) { $g_result_selected['marker_title'] = $g_task_array['search_marker_title_1']; }
-										else { $g_result_selected['marker_title'] = direct_local_get ("datalinker_object_unmark"); }
-									}
-									else
-									{
-										if (isset ($g_task_array['search_marker_title_0'])) { $g_result_selected['marker_title'] = $g_task_array['search_marker_title_0']; }
-										else { $g_result_selected['marker_title'] = direct_local_get ("datalinker_object_mark"); }
-									}
+									if ($g_result_selected['marked']) { $g_result_selected['marker_title'] = ((isset ($g_task_array['search_marker_title_1'])) ? $g_task_array['search_marker_title_1'] : direct_local_get ("datalinker_object_unmark")); }
+									else { $g_result_selected['marker_title'] = ((isset ($g_task_array['search_marker_title_0'])) ? $g_task_array['search_marker_title_0'] : direct_local_get ("datalinker_object_mark")); }
 								}
 
 								$g_result_accepted = $g_result_selected['object_available'];
@@ -304,8 +296,7 @@ case "list":
 				}
 				else
 				{
-					if (isset ($g_task_array['search_result_positions'][($g_results_offset + $g_results_position)])) { $g_results_positions = $g_task_array['search_result_positions'][($g_results_offset + $g_results_position)]; }
-					else { $g_results_positions = 0; }
+					$g_results_positions = ((isset ($g_task_array['search_result_positions'][($g_results_offset + $g_results_position)])) ? $g_task_array['search_result_positions'][($g_results_offset + $g_results_position)] : 0);
 
 					if ($g_results_positions)
 					{
@@ -376,8 +367,7 @@ case "list":
 			}
 		}
 
-		if ((isset ($g_task_array['search_selection_title']))&&($g_task_array['search_selection_title'])) { $direct_cachedata['output_title'] = $g_task_array['search_selection_title']; }
-		else { $direct_cachedata['output_title'] = direct_local_get ("search_results"); }
+		$direct_cachedata['output_title'] = (((isset ($g_task_array['search_selection_title']))&&($g_task_array['search_selection_title'])) ? $g_task_array['search_selection_title'] : direct_local_get ("search_results"));
 
 		if ($g_dtheme)
 		{
@@ -486,13 +476,10 @@ case "mark_switch":
 
 	if ($g_continue_check)
 	{
-		if (strpos ($g_eid,"u-") === 0) { $g_datalinker_object = new direct_datalinker_uhome (); }
-		else { $g_datalinker_object = new direct_datalinker (); }
-
-		if ($g_datalinker_object) { $g_datalinker_array = $g_datalinker_object->get ($g_eid); }
-		else { $g_datalinker_array = NULL; }
-
 		$g_continue_check = false;
+		$g_datalinker_object = ((strpos ($g_eid,"u-") === 0) ? new direct_datalinker_uhome () : new direct_datalinker ());
+
+		$g_datalinker_array = ($g_datalinker_object ? $g_datalinker_object->get ($g_eid) : NULL);
 
 		if ($g_datalinker_array)
 		{
@@ -502,7 +489,6 @@ case "mark_switch":
 			{
 				$g_service_array = $g_service_array['services'][$g_datalinker_array['ddbdatalinker_type']];
 				$g_datalinker_array = direct_datalinker_iviewer ($g_service_array,$g_datalinker_object);
-
 				if ($g_datalinker_array) { $g_continue_check = $g_datalinker_array['object_available']; }
 			}
 		}
@@ -578,7 +564,7 @@ case "run":
 
 	if ($g_continue_check) { $g_continue_check = $direct_classes['basic_functions']->settings_get ($direct_settings['path_data']."/settings/swg_search.php"); }
 	if ($g_continue_check) { $g_continue_check = $direct_classes['basic_functions']->include_file ($direct_settings['path_system']."/functions/swg_tmp_storager.php"); }
-	
+
 	if ($g_continue_check)
 	{
 	//j// BOA
@@ -587,8 +573,7 @@ case "run":
 	$g_search_storage = direct_tmp_storage_get ("s",$g_tid,"","task_cache");
 	// md5 ("search")
 
-	if ($g_search_storage) { $g_task_array = direct_evars_get ($g_search_storage); }
-	else { $g_task_array = NULL; }
+	$g_task_array = ($g_search_storage ? direct_evars_get ($g_search_storage) : NULL);
 
 	if (($g_task_array)&&(isset ($g_task_array['core_sid'],$g_task_array['search_result_handler'],$g_task_array['uuid']))&&($g_task_array['uuid'] == $direct_settings['uuid']))
 	{
@@ -679,9 +664,7 @@ case "run":
 
 		$g_select_criteria = "<sqlconditions><sub1 type='sublevel'>";
 
-		if ($g_task_array['search_base'] == "title") { $g_search_sid = $direct_settings['datalinker_table'].".ddbdatalinker_sid"; }
-		else { $g_search_sid = $direct_settings['data_table'].".ddbdata_sid"; }
-
+		$g_search_sid = (($g_task_array['search_base'] == "title") ? $direct_settings['datalinker_table'].".ddbdatalinker_sid" : $direct_settings['data_table'].".ddbdata_sid");
 		$g_service_types_defined = isset ($g_task_array['search_service_types']);
 
 		foreach ($g_task_array['search_services'] as $g_sid)
@@ -702,14 +685,12 @@ case "run":
 		$direct_classes['db']->define_row_conditions ($g_select_criteria);
 		if ($direct_settings['search_limit']) { $direct_classes['db']->define_limit ($direct_settings['search_limit']); }
 
+		$g_continue_check = (($g_task_array['search_base'] == "title") ? false : true);
 		$g_search_result_positions = "";
 		$g_search_results = $direct_classes['db']->query_exec ("ma");
 		$g_search_results_confirmed = "";
 		$g_search_results_possible = "";
 		$g_search_results_size = (strlen ($g_search_storage) + 100);
-
-		if ($g_task_array['search_base'] == "title") { $g_continue_check = false; }
-		else { $g_continue_check = true; }
 
 		foreach ($g_search_results as $g_search_result_number => $g_search_result_array)
 		{
