@@ -67,6 +67,7 @@ if (!defined ("direct_product_iversion")) { exit (); }
 //j// Script specific commands
 
 if (!isset ($direct_settings['datalinker_iview_objects_per_page'])) { $direct_settings['datalinker_iview_objects_per_page'] = 20; }
+if (!isset ($direct_settings['datalinker_site'])) { $direct_settings['datalinker_site'] = false; }
 if (!isset ($direct_settings['search_cache_size'])) { $direct_settings['search_cache_size'] = 0xffffffff; }
 if (!isset ($direct_settings['search_https'])) { $direct_settings['search_https'] = false; }
 if (!isset ($direct_settings['search_limit'])) { $direct_settings['search_limit'] = 250; }
@@ -680,6 +681,7 @@ case "run":
 
 		$g_select_criteria .= "</sub1>";
 		if ((isset ($g_task_array['search_filter_links']))&&($g_task_array['search_filter_links'])) { $g_select_criteria .= "<element1 attribute='{$direct_settings['datalinker_table']}.ddbdatalinker_id' value='{$direct_settings['datalinker_table']}.ddbdatalinker_id_object' type='attribute' />"; }
+		if ($direct_settings['datalinker_site']) { $g_select_criteria .= "<subsite type='sublevel'><element1 attribute='{$direct_settings['datalinker_table']}.ddbdatalinker_id_site' null='1' condition='or' />".($direct_classes['db']->define_row_conditions_encode ($direct_settings['datalinker_table'].".ddbdatalinker_id_site",$direct_settings['swg_id'],"string","==","or"))."</subsite>"; }
 		$g_select_criteria .= "</sqlconditions>";
 
 		$direct_classes['db']->define_row_conditions ($g_select_criteria);
